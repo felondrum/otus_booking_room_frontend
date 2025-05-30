@@ -21,6 +21,10 @@ fi
 echo "Устанавливаем зависимости..."
 npm install
 
+# Устанавливаем переменную окружения для API URL
+export REACT_APP_API_URL="http://176.108.251.54/api"
+echo "Установлен API URL: $REACT_APP_API_URL"
+
 # Собираем приложение
 echo "Собираем приложение..."
 npm run build
