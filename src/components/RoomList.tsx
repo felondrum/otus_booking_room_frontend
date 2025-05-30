@@ -16,7 +16,6 @@ import { roomApi } from '../services/api';
 import { format } from 'date-fns';
 import { BookingForm } from './BookingForm';
 import { RoomFilters } from './RoomFilters';
-import { RoomCreate } from './RoomCreate';
 import { useUser } from '../context/UserContext';
 
 interface RoomListProps {
@@ -94,7 +93,6 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect, onBookingClick
           capacity={capacity}
           setCapacity={setCapacity}
         />
-        <RoomCreate onCreated={loadRooms} />
       </Box>
 
       {error && (
