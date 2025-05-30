@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { userApi } from '../services/api';
 import { User } from '../types/api';
 import { useUser } from '../context/UserContext';
-import { Box, MenuItem, Select, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Tooltip } from '@mui/material';
+import { Box, MenuItem, Select, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Tooltip, Snackbar, Alert, useMediaQuery, useTheme } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 export const UserSelect: React.FC = () => {
@@ -12,6 +12,9 @@ export const UserSelect: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const loadUsers = async () => {
     try {
@@ -35,13 +38,20 @@ export const UserSelect: React.FC = () => {
       setName('');
       setEmail('');
       setError(null);
+      setSuccessMessage('Пользователь успешно создан');
     } catch (e) {
       setError('Ошибка создания пользователя');
     }
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+    <Box sx={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      gap: 2,
+      flexDirection: isMobile ? 'column' : 'row',
+      width: isMobile ? '100%' : 'auto'
+    }}>
       <Select
         value={user?.id || ''}
         displayEmpty
@@ -49,7 +59,11 @@ export const UserSelect: React.FC = () => {
           const selected = users.find(u => u.id === e.target.value);
           setUser(selected || null);
         }}
-        sx={{ minWidth: 200 }}
+        sx={{ 
+          minWidth: isMobile ? '100%' : 200,
+          backgroundColor: 'white',
+          borderRadius: 1
+        }}
       >
         <MenuItem value=""><em>Выберите пользователя</em></MenuItem>
         {users.map(u => (
@@ -72,9 +86,10 @@ export const UserSelect: React.FC = () => {
       <Dialog 
         open={open} 
         onClose={() => setOpen(false)}
+        fullScreen={isMobile}
         sx={{
           '& .MuiDialog-paper': {
-            zIndex: 1300 // Выше чем у AppBar (z-index: 1100)
+            zIndex: 1300
           }
         }}
       >
@@ -89,6 +104,20 @@ export const UserSelect: React.FC = () => {
           <Button onClick={handleCreate} variant="contained">Создать</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={3000}
+        onClose={() => setSuccessMessage(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSuccessMessage(null)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }; 

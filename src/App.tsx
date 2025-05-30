@@ -54,21 +54,49 @@ function AppContent() {
       <CssBaseline />
       <AppBar position="static">
         <Toolbar>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flexGrow: 1 }}>
-            <Typography variant="h6" component="div">
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'flex-start', 
+            flexGrow: 1,
+            overflow: 'hidden'
+          }}>
+            <Typography 
+              variant="h6" 
+              component="div"
+              sx={{
+                fontSize: { xs: '1rem', sm: '1.25rem' },
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%'
+              }}
+            >
               Система бронирования переговорных комнат
             </Typography>
-            <Typography variant="caption" sx={{ opacity: 0.7 }}>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                opacity: 0.7,
+                display: { xs: 'none', sm: 'block' }
+              }}
+            >
               OTUS. Scala разработчик. Филиппов Антон
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            alignItems: 'center',
+            flexDirection: { xs: 'column', sm: 'row' }
+          }}>
             <UserSelect />
             <Button 
               color="inherit" 
               onClick={() => handleTabChange('/')}
               sx={{ 
-                backgroundColor: location.pathname === '/' ? 'rgba(255, 255, 255, 0.1)' : 'transparent' 
+                backgroundColor: location.pathname === '/' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                width: { xs: '100%', sm: 'auto' }
               }}
             >
               Комнаты
@@ -77,7 +105,8 @@ function AppContent() {
               color="inherit" 
               onClick={() => handleTabChange('/bookings')}
               sx={{ 
-                backgroundColor: location.pathname === '/bookings' ? 'rgba(255, 255, 255, 0.1)' : 'transparent' 
+                backgroundColor: location.pathname === '/bookings' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                width: { xs: '100%', sm: 'auto' }
               }}
             >
               Бронирования
@@ -85,8 +114,15 @@ function AppContent() {
           </Box>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ mt: 4 }}>
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          mt: { xs: 2, sm: 4 }, 
+          mb: { xs: 2, sm: 4 },
+          px: { xs: 2, sm: 3 }
+        }}
+      >
+        <Box sx={{ mt: { xs: 2, sm: 4 } }}>
           <Routes>
             <Route path="/" element={
               <>
