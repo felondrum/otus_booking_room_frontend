@@ -1,40 +1,31 @@
 #!/bin/bash
 
-# Проверяем наличие Node.js
-if ! command -v node &> /dev/null; then
-    echo "Node.js не установлен. Устанавливаем..."
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-    sudo apt-get install -y nodejs
+# Проверяем наличие Docker
+if ! command -v docker &> /dev/null; then
+    echo "Docker не установлен. Пожалуйста, установите Docker: https://docs.docker.com/get-docker/"
+    exit 1
 fi
 
-# Проверяем версию Node.js
-NODE_VERSION=$(node -v)
-echo "Установлена версия Node.js: $NODE_VERSION"
-
-# Проверяем наличие npm
-if ! command -v npm &> /dev/null; then
-    echo "npm не установлен. Устанавливаем..."
-    sudo apt-get install -y npm
+# Проверяем наличие Docker Compose
+if ! command -v docker-compose &> /dev/null; then
+    echo "Docker Compose не установлен. Пожалуйста, установите Docker Compose: https://docs.docker.com/compose/install/"
+    exit 1
 fi
 
-# Устанавливаем зависимости
-echo "Устанавливаем зависимости..."
-npm install
+# Проверяем версии
+echo "Версия Docker: $(docker --version)"
+echo "Версия Docker Compose: $(docker-compose --version)"
 
-# Устанавливаем переменную окружения для API URL
-export REACT_APP_API_URL="https://otus-filippov-room-booking.ru/api"
-echo "Установлен API URL: $REACT_APP_API_URL"
+# Останавливаем только контейнеры фронтенда
+echo "Останавливаем контейнеры фронтенда..."
+docker-compose down --remove-orphans
 
-# Собираем приложение
-echo "Собираем приложение..."
-npm run build
+# Собираем и запускаем контейнеры фронтенда
+echo "Запускаем фронтенд..."
+docker-compose up --build -d
 
-# Проверяем наличие serve
-if ! command -v serve &> /dev/null; then
-    echo "Устанавливаем serve глобально..."
-    sudo npm install -g serve
-fi
+# Проверяем статус только фронтенда
+echo "Проверяем статус контейнеров фронтенда..."
+docker-compose ps
 
-# Запускаем приложение
-echo "Запускаем приложение на порту 3000..."
-serve -s build -l 3000 
+echo "Фронтенд доступен по адресу: http://localhost:3000" 
