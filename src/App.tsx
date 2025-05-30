@@ -35,10 +35,15 @@ function App() {
           <CssBaseline />
           <AppBar position="static">
             <Toolbar>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                Система бронирования переговорных комнат
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h6" component="div">
+                  Система бронирования переговорных комнат
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                  OTUS. Scala разработчик. Филиппов Антон
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', ml: 'auto' }}>
                 <Button 
                   color="inherit" 
                   component={Link} 

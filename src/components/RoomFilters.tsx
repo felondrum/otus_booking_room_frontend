@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 interface RoomFiltersProps {
@@ -17,6 +17,82 @@ interface RoomFiltersProps {
 export const RoomFilters: React.FC<RoomFiltersProps> = ({
   filterMode, setFilterMode, date, setDate, startTime, setStartTime, endTime, setEndTime, capacity, setCapacity
 }) => {
+  // Функция для получения текущей даты в формате YYYY-MM-DD
+  const getCurrentDate = () => {
+    const now = new Date();
+    return now.toLocaleDateString('sv-SE'); // формат YYYY-MM-DD
+  };
+
+  // Функция для получения текущего времени в формате YYYY-MM-DDThh:mm
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return now.toLocaleString('sv-SE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).replace(' ', 'T');
+  };
+
+  // Функция для получения времени через час в формате YYYY-MM-DDThh:mm
+  const getDateTimePlusHour = () => {
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    return now.toLocaleString('sv-SE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).replace(' ', 'T');
+  };
+
+  // Функция для получения времени через час от указанного времени
+  const getEndTimeFromStart = (startTimeStr: string) => {
+    const startDate = new Date(startTimeStr);
+    startDate.setHours(startDate.getHours() + 1);
+    return startDate.toLocaleString('sv-SE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).replace(' ', 'T');
+  };
+
+  // Инициализация времени при монтировании компонента
+  useEffect(() => {
+    if (filterMode === 'date') {
+      setDate(getCurrentDate());
+    } else {
+      setStartTime(getCurrentDateTime());
+      setEndTime(getDateTimePlusHour());
+    }
+  }, []);
+
+  // Обновление времени при изменении режима фильтрации
+  useEffect(() => {
+    if (filterMode === 'date') {
+      setDate(getCurrentDate());
+    } else {
+      setStartTime(getCurrentDateTime());
+      setEndTime(getDateTimePlusHour());
+    }
+  }, [filterMode]);
+
+  // Обработчик изменения времени начала
+  const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newStartTime = e.target.value;
+    setStartTime(newStartTime);
+    if (newStartTime) {
+      setEndTime(getEndTimeFromStart(newStartTime));
+    }
+  };
+
   return (
     <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
       <ToggleButtonGroup
@@ -35,6 +111,9 @@ export const RoomFilters: React.FC<RoomFiltersProps> = ({
           value={date}
           onChange={e => setDate(e.target.value)}
           InputLabelProps={{ shrink: true }}
+          inputProps={{
+            min: getCurrentDate()
+          }}
         />
       ) : (
         <>
@@ -42,8 +121,11 @@ export const RoomFilters: React.FC<RoomFiltersProps> = ({
             type="datetime-local"
             label="Начало"
             value={startTime}
-            onChange={e => setStartTime(e.target.value)}
+            onChange={handleStartTimeChange}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              min: getCurrentDateTime()
+            }}
           />
           <TextField
             type="datetime-local"
@@ -51,6 +133,9 @@ export const RoomFilters: React.FC<RoomFiltersProps> = ({
             value={endTime}
             onChange={e => setEndTime(e.target.value)}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              min: startTime || getCurrentDateTime()
+            }}
           />
         </>
       )}
@@ -60,6 +145,9 @@ export const RoomFilters: React.FC<RoomFiltersProps> = ({
         value={capacity}
         onChange={e => setCapacity(e.target.value ? Number(e.target.value) : '')}
         InputLabelProps={{ shrink: true }}
+        inputProps={{
+          min: 1
+        }}
       />
     </Box>
   );
