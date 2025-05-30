@@ -4,7 +4,12 @@ import {
   CardContent, 
   Typography, 
   Button,
-  Box
+  Box,
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import { Room } from '../types/api';
 import { roomApi } from '../services/api';
@@ -14,7 +19,12 @@ import { RoomFilters } from './RoomFilters';
 import { RoomCreate } from './RoomCreate';
 import { useUser } from '../context/UserContext';
 
-export const RoomList: React.FC = () => {
+interface RoomListProps {
+  onRoomSelect: (room: Room) => void;
+  onBookingClick: () => void;
+}
+
+export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect, onBookingClick }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +34,7 @@ export const RoomList: React.FC = () => {
   const [endTime, setEndTime] = useState('');
   const [capacity, setCapacity] = useState<number | ''>('');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const { user } = useUser();
 
   const loadRooms = async () => {
@@ -50,8 +61,22 @@ export const RoomList: React.FC = () => {
     // eslint-disable-next-line
   }, [date, startTime, endTime, capacity, filterMode]);
 
-  const handleBookingSuccess = () => {
-    loadRooms();
+  const handleRoomClick = (room: Room) => {
+    setSelectedRoom(room);
+    setIsDetailsOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsOpen(false);
+    setSelectedRoom(null);
+  };
+
+  const handleBookRoom = () => {
+    if (selectedRoom) {
+      onRoomSelect(selectedRoom);
+      onBookingClick();
+      handleCloseDetails();
+    }
   };
 
   return (
@@ -102,15 +127,16 @@ export const RoomList: React.FC = () => {
                     {room.description}
                   </Typography>
                 )}
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  sx={{ mt: 2 }}
-                  onClick={() => setSelectedRoom(room)}
-                  disabled={!user}
-                >
-                  Забронировать
-                </Button>
+                <Box sx={{ mt: 2 }}>
+                  <Button 
+                    variant="contained" 
+                    color="primary"
+                    onClick={() => handleRoomClick(room)}
+                    disabled={!user}
+                  >
+                    Подробнее
+                  </Button>
+                </Box>
                 {!user && (
                   <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
                     Сначала выберите пользователя
@@ -123,13 +149,27 @@ export const RoomList: React.FC = () => {
       </Box>
 
       {selectedRoom && user && (
-        <BookingForm
-          room={selectedRoom}
-          open={true}
-          onClose={() => setSelectedRoom(null)}
-          onSuccess={handleBookingSuccess}
-          userId={user.id}
-        />
+        <Dialog open={isDetailsOpen} onClose={handleCloseDetails}>
+          <DialogTitle>
+            {selectedRoom.name}
+          </DialogTitle>
+          <DialogContent>
+            <Typography gutterBottom>
+              Вместимость: {selectedRoom.capacity} человек
+            </Typography>
+            {selectedRoom.description && (
+              <Typography>
+                {selectedRoom.description}
+              </Typography>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDetails}>Закрыть</Button>
+            <Button onClick={handleBookRoom} color="primary" variant="contained">
+              Забронировать
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </Box>
   );
