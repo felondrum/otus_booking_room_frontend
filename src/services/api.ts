@@ -38,6 +38,7 @@ export const bookingApi = {
   delete: (id: string) => api.delete(`/bookings/${id}`),
   checkAvailability: (data: { roomId: string; startTime: string; endTime: string }) => 
     api.get<boolean>('/bookings/check', { params: data }),
+  getByUserId: (userId: string) => api.get<Booking[]>(`/bookings/user/${userId}`),
 };
 
 export {}; 

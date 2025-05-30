@@ -14,6 +14,7 @@ import {
 import { RoomList } from './components/RoomList';
 import { UserProvider } from './context/UserContext';
 import { UserSelect } from './components/UserSelect';
+import { UserBookings } from './components/UserBookings';
 
 const theme = createTheme({
   palette: {
@@ -59,11 +60,7 @@ function App() {
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Routes>
               <Route path="/" element={<RoomList />} />
-              <Route path="/bookings" element={
-                <Typography variant="h5" align="center" sx={{ mt: 4 }}>
-                  Страница моих бронирований (в разработке)
-                </Typography>
-              } />
+              <Route path="/bookings" element={<UserBookings />} />
             </Routes>
           </Container>
         </Router>

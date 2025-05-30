@@ -303,6 +303,42 @@ paths:
             text/plain:
               schema:
                 type: string
+  /api/bookings/user/{userId}:
+    get:
+      tags:
+      - Бронирования
+      description: Получение списка бронирований пользователя
+      operationId: getBookingsByUserId
+      parameters:
+      - name: userId
+        in: path
+        description: ID пользователя
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Список бронирований пользователя
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingResponse'
+              example:
+              - id: 550e8400-e29b-41d4-a716-446655440002
+                roomId: 550e8400-e29b-41d4-a716-446655440000
+                userId: 550e8400-e29b-41d4-a716-446655440001
+                startTime: '2024-03-20T10:00:00'
+                endTime: '2024-03-20T12:00:00'
+                createdAt: '2024-03-19T15:30:00'
+        '400':
+          description: 'Invalid value for: path parameter userId'
+          content:
+            text/plain:
+              schema:
+                type: string
   /api/bookings/check:
     get:
       tags:
