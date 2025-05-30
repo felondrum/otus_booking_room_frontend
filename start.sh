@@ -22,7 +22,7 @@ echo "Устанавливаем зависимости..."
 npm install
 
 # Устанавливаем переменную окружения для API URL
-export REACT_APP_API_URL="http://176.108.251.54/api"
+export REACT_APP_API_URL="https://otus-filippov-room-booking.ru/api"
 echo "Установлен API URL: $REACT_APP_API_URL"
 
 # Собираем приложение
