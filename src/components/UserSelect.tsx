@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { userApi } from '../services/api';
 import { User } from '../types/api';
 import { useUser } from '../context/UserContext';
-import { Box, MenuItem, Select, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
+import { Box, MenuItem, Select, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Tooltip } from '@mui/material';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 export const UserSelect: React.FC = () => {
   const { user, setUser } = useUser();
@@ -55,8 +56,28 @@ export const UserSelect: React.FC = () => {
           <MenuItem key={u.id} value={u.id}>{u.name} ({u.email})</MenuItem>
         ))}
       </Select>
-      <Button variant="outlined" onClick={() => setOpen(true)}>Создать пользователя</Button>
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Tooltip title="Создать пользователя">
+        <IconButton 
+          onClick={() => setOpen(true)}
+          sx={{ 
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.1)'
+            }
+          }}
+        >
+          <PersonAddIcon />
+        </IconButton>
+      </Tooltip>
+      <Dialog 
+        open={open} 
+        onClose={() => setOpen(false)}
+        sx={{
+          '& .MuiDialog-paper': {
+            zIndex: 1300 // Выше чем у AppBar (z-index: 1100)
+          }
+        }}
+      >
         <DialogTitle>Создать пользователя</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
           <TextField label="Имя" value={name} onChange={e => setName(e.target.value)} fullWidth required />
