@@ -1,0 +1,484 @@
+openapi: 3.1.0
+info:
+  title: OTUS. Сервис бронирования комнат
+  version: 1.0.0
+paths:
+  /api/users:
+    get:
+      tags:
+      - Пользователи
+      description: Получение списка всех пользователей
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+              example:
+              - id: 550e8400-e29b-41d4-a716-446655440000
+                name: Иван Иванов
+                email: ivan@example.com
+              - id: 550e8400-e29b-41d4-a716-446655440001
+                name: Петр Петров
+                email: petr@example.com
+    post:
+      tags:
+      - Пользователи
+      description: Создание нового пользователя
+      operationId: createUser
+      requestBody:
+        description: Данные для создания пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+            example:
+              name: Иван Иванов
+              email: ivan@example.com
+        required: true
+      responses:
+        '200':
+          description: Созданный пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              example:
+                id: 550e8400-e29b-41d4-a716-446655440000
+                name: Иван Иванов
+                email: ivan@example.com
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Некорректный формат email
+  /api/rooms:
+    get:
+      tags:
+      - Комнаты
+      description: Получение списка всех комнат
+      operationId: getAllRooms
+      responses:
+        '200':
+          description: Список комнат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoomResponse'
+              example:
+              - id: 550e8400-e29b-41d4-a716-446655440000
+                name: Конференц-зал
+                capacity: 10
+                description: Большой конференц-зал на 10 человек
+              - id: 550e8400-e29b-41d4-a716-446655440001
+                name: Переговорная
+                capacity: 4
+                description: Малая переговорная на 4 человека
+    post:
+      tags:
+      - Комнаты
+      description: Создание новой комнаты
+      operationId: createRoom
+      requestBody:
+        description: Данные для создания комнаты
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoomRequest'
+            example:
+              name: Конференц-зал
+              capacity: 10
+              description: Большой конференц-зал на 10 человек
+        required: true
+      responses:
+        '200':
+          description: Созданная комната
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomResponse'
+              example:
+                id: 550e8400-e29b-41d4-a716-446655440000
+                name: Конференц-зал
+                capacity: 10
+                description: Большой конференц-зал на 10 человек
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Некорректный формат email
+  /api/rooms/{id}:
+    delete:
+      tags:
+      - Комнаты
+      description: Удаление комнаты
+      operationId: deleteRoom
+      parameters:
+      - name: id
+        in: path
+        description: ID комнаты
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: 'Invalid value for: path parameter id'
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/rooms/available:
+    post:
+      tags:
+      - Комнаты
+      description: Поиск доступных комнат на указанный период
+      operationId: getAvailableRooms
+      requestBody:
+        description: Параметры поиска доступных комнат
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailableRoomsRequest'
+            example:
+              startTime: '2024-03-20T10:00:00'
+              endTime: '2024-03-20T12:00:00'
+              capacity: 5
+        required: true
+      responses:
+        '200':
+          description: Список доступных комнат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoomResponse'
+              example:
+              - id: 550e8400-e29b-41d4-a716-446655440000
+                name: Конференц-зал
+                capacity: 10
+                description: Большой конференц-зал на 10 человек
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Некорректный формат email
+  /api/rooms/available/date:
+    post:
+      tags:
+      - Комнаты
+      description: Поиск доступных комнат на указанную дату
+      operationId: getAvailableRoomsByDate
+      requestBody:
+        description: Параметры поиска доступных комнат
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailableRoomsByDateRequest'
+            example:
+              date: '2024-03-20'
+              capacity: 5
+        required: true
+      responses:
+        '200':
+          description: Список доступных комнат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoomResponse'
+              example:
+              - id: 550e8400-e29b-41d4-a716-446655440000
+                name: Конференц-зал
+                capacity: 10
+                description: Большой конференц-зал на 10 человек
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Некорректный формат email
+  /api/bookings:
+    get:
+      tags:
+      - Бронирования
+      description: Получение списка всех бронирований
+      operationId: getAllBookings
+      responses:
+        '200':
+          description: Список бронирований
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingResponse'
+              example:
+              - id: 550e8400-e29b-41d4-a716-446655440002
+                roomId: 550e8400-e29b-41d4-a716-446655440000
+                userId: 550e8400-e29b-41d4-a716-446655440001
+                startTime: '2024-03-20T10:00:00'
+                endTime: '2024-03-20T12:00:00'
+                createdAt: '2024-03-19T15:30:00'
+    post:
+      tags:
+      - Бронирования
+      description: Создание нового бронирования
+      operationId: createBooking
+      requestBody:
+        description: Данные для создания бронирования
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+            example:
+              roomId: 550e8400-e29b-41d4-a716-446655440000
+              userId: 550e8400-e29b-41d4-a716-446655440001
+              startTime: '2024-03-20T10:00:00'
+              endTime: '2024-03-20T12:00:00'
+        required: true
+      responses:
+        '200':
+          description: Созданное бронирование
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+              example:
+                id: 550e8400-e29b-41d4-a716-446655440002
+                roomId: 550e8400-e29b-41d4-a716-446655440000
+                userId: 550e8400-e29b-41d4-a716-446655440001
+                startTime: '2024-03-20T10:00:00'
+                endTime: '2024-03-20T12:00:00'
+                createdAt: '2024-03-19T15:30:00'
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Некорректный формат email
+  /api/bookings/{id}:
+    delete:
+      tags:
+      - Бронирования
+      description: Удаление бронирования
+      operationId: deleteBooking
+      parameters:
+      - name: id
+        in: path
+        description: ID бронирования
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: 'Invalid value for: path parameter id'
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/bookings/check:
+    get:
+      tags:
+      - Бронирования
+      description: Проверка доступности комнаты на указанный период
+      operationId: checkAvailability
+      requestBody:
+        description: Параметры проверки доступности
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckAvailabilityRequest'
+            example:
+              roomId: 550e8400-e29b-41d4-a716-446655440000
+              startTime: '2024-03-20T10:00:00'
+              endTime: '2024-03-20T12:00:00'
+        required: true
+      responses:
+        '200':
+          description: Результат проверки доступности
+          content:
+            application/json:
+              schema:
+                type: boolean
+              example: true
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Некорректный формат email
+components:
+  schemas:
+    AvailableRoomsByDateRequest:
+      required:
+      - date
+      type: object
+      properties:
+        date:
+          type: string
+        capacity:
+          type: integer
+          format: int32
+      minimum: 1
+      maximum: 1000
+    AvailableRoomsRequest:
+      required:
+      - startTime
+      - endTime
+      type: object
+      properties:
+        startTime:
+          type: string
+        endTime:
+          type: string
+        capacity:
+          type: integer
+          format: int32
+      minimum: 1
+      maximum: 1000
+    BookingResponse:
+      required:
+      - id
+      - roomId
+      - userId
+      - startTime
+      - endTime
+      - createdAt
+      type: object
+      properties:
+        id:
+          type: string
+        roomId:
+          type: string
+        userId:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        createdAt:
+          type: string
+    CheckAvailabilityRequest:
+      required:
+      - roomId
+      - startTime
+      - endTime
+      type: object
+      properties:
+        roomId:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+    CreateBookingRequest:
+      required:
+      - roomId
+      - userId
+      - startTime
+      - endTime
+      type: object
+      properties:
+        roomId:
+          type: string
+        userId:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+    CreateRoomRequest:
+      required:
+      - name
+      - capacity
+      type: object
+      properties:
+        name:
+          type: string
+        capacity:
+          type: integer
+          format: int32
+        description:
+          type: string
+      minLength: 1
+      maxLength: 100
+      minimum: 1
+      maximum: 1000
+    CreateUserRequest:
+      required:
+      - name
+      - email
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+      pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+      minLength: 1
+      maxLength: 100
+    ErrorResponse:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+    RoomResponse:
+      required:
+      - id
+      - name
+      - capacity
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        capacity:
+          type: integer
+          format: int32
+        description:
+          type: string
+    UserResponse:
+      required:
+      - id
+      - name
+      - email
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
