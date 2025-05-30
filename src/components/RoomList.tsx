@@ -21,9 +21,10 @@ import { useUser } from '../context/UserContext';
 interface RoomListProps {
   onRoomSelect: (room: Room) => void;
   onBookingClick: () => void;
+  refreshTrigger: number;
 }
 
-export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect, onBookingClick }) => {
+export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect, onBookingClick, refreshTrigger }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect, onBookingClick
   useEffect(() => {
     loadRooms();
     // eslint-disable-next-line
-  }, [date, startTime, endTime, capacity, filterMode]);
+  }, [date, startTime, endTime, capacity, filterMode, refreshTrigger]);
 
   const handleRoomClick = (room: Room) => {
     setSelectedRoom(room);

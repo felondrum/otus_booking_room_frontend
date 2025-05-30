@@ -9,9 +9,11 @@ import {
   Box,
   Alert,
   Snackbar,
+  InputAdornment,
 } from '@mui/material';
 import { Room } from '../types/api';
 import { bookingApi } from '../services/api';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 interface BookingFormProps {
   room: Room;
@@ -66,14 +68,14 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         endTime,
       });
       setSuccessMessage('Комната успешно забронирована');
-      onSuccess();
-      // Закрываем диалог через 1.5 секунды после успешного бронирования
+      // Увеличим время до закрытия диалога, чтобы сообщение успело показаться
       setTimeout(() => {
+        onSuccess();
         onClose();
         setStartTime('');
         setEndTime('');
         setError(null);
-      }, 1500);
+      }, 2000);
     } catch (err) {
       setError('Ошибка при создании бронирования');
       console.error(err);
@@ -85,6 +87,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     setStartTime('');
     setEndTime('');
     setError(null);
+    setSuccessMessage(null);
   };
 
   return (
@@ -104,6 +107,32 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 inputProps={{
                   min: new Date().toISOString().slice(0, 16)
                 }}
+                sx={{
+                  '& .MuiInputBase-input': {
+                    color: startTime ? 'inherit' : 'rgba(0, 0, 0, 0.38)'
+                  }
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <CalendarTodayIcon 
+                        sx={{ 
+                          cursor: 'pointer',
+                          color: 'action.active',
+                          '&:hover': {
+                            color: 'primary.main'
+                          }
+                        }}
+                        onClick={() => {
+                          const input = document.querySelector('input[type="datetime-local"]') as HTMLInputElement;
+                          if (input) {
+                            input.showPicker();
+                          }
+                        }}
+                      />
+                    </InputAdornment>
+                  ),
+                }}
               />
               <TextField
                 label="Время окончания"
@@ -114,6 +143,33 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 required
                 inputProps={{
                   min: startTime || new Date().toISOString().slice(0, 16)
+                }}
+                sx={{
+                  '& .MuiInputBase-input': {
+                    color: endTime ? 'inherit' : 'rgba(0, 0, 0, 0.38)'
+                  }
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <CalendarTodayIcon 
+                        sx={{ 
+                          cursor: 'pointer',
+                          color: 'action.active',
+                          '&:hover': {
+                            color: 'primary.main'
+                          }
+                        }}
+                        onClick={() => {
+                          const inputs = document.querySelectorAll('input[type="datetime-local"]');
+                          const input = inputs[1] as HTMLInputElement;
+                          if (input) {
+                            input.showPicker();
+                          }
+                        }}
+                      />
+                    </InputAdornment>
+                  ),
                 }}
               />
               {error && (
@@ -135,20 +191,21 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             </Button>
           </DialogActions>
         </form>
-      </Dialog>
-      <Snackbar
-        open={!!successMessage}
-        autoHideDuration={3000}
-        onClose={() => setSuccessMessage(null)}
-      >
-        <Alert
+        <Snackbar
+          open={!!successMessage}
+          autoHideDuration={3000}
           onClose={() => setSuccessMessage(null)}
-          severity="success"
-          sx={{ width: '100%' }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
-          {successMessage}
-        </Alert>
-      </Snackbar>
+          <Alert
+            onClose={() => setSuccessMessage(null)}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            {successMessage}
+          </Alert>
+        </Snackbar>
+      </Dialog>
     </>
   );
 }; 

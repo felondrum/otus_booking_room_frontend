@@ -37,10 +37,12 @@ function AppContent() {
   const { user } = useUser();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isBookingFormOpen, setIsBookingFormOpen] = useState(false);
+  const [refreshRooms, setRefreshRooms] = useState(0);
 
   const handleBookingSuccess = () => {
     setIsBookingFormOpen(false);
     setSelectedRoom(null);
+    setRefreshRooms(prev => prev + 1);
   };
 
   const handleTabChange = (path: string) => {
@@ -89,11 +91,11 @@ function AppContent() {
             <Route path="/" element={
               <>
                 <RoomCreate />
-                <RoomList onRoomSelect={setSelectedRoom} onBookingClick={() => setIsBookingFormOpen(true)} />
-              </>
-            } />
-            <Route path="/bookings" element={
-              <>
+                <RoomList 
+                  onRoomSelect={setSelectedRoom} 
+                  onBookingClick={() => setIsBookingFormOpen(true)} 
+                  refreshTrigger={refreshRooms}
+                />
                 {selectedRoom && (
                   <BookingForm 
                     room={selectedRoom}
@@ -103,6 +105,10 @@ function AppContent() {
                     userId={user?.id || ''}
                   />
                 )}
+              </>
+            } />
+            <Route path="/bookings" element={
+              <>
                 <UserBookings />
               </>
             } />
