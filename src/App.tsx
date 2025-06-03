@@ -17,6 +17,7 @@ import { UserSelect } from './components/UserSelect';
 import { UserBookings } from './components/UserBookings';
 import { RoomCreate } from './components/RoomCreate';
 import { BookingForm } from './components/BookingForm';
+import { Footer } from './components/Footer';
 import { useUser } from './context/UserContext';
 import { Room } from './types/api';
 
@@ -50,7 +51,11 @@ function AppContent() {
   };
 
   return (
-    <>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column',
+      minHeight: '100vh'
+    }}>
       <CssBaseline />
       <AppBar position="static">
         <Toolbar>
@@ -119,7 +124,8 @@ function AppContent() {
         sx={{ 
           mt: { xs: 2, sm: 4 }, 
           mb: { xs: 2, sm: 4 },
-          px: { xs: 2, sm: 3 }
+          px: { xs: 2, sm: 3 },
+          flex: 1
         }}
       >
         <Box sx={{ mt: { xs: 2, sm: 4 } }}>
@@ -151,7 +157,8 @@ function AppContent() {
           </Routes>
         </Box>
       </Container>
-    </>
+      <Footer />
+    </Box>
   );
 }
 
